@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#D96B9A">
+    <title>Cantinho da Costura - Gestão de Ateliê Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #D96B9A;
+            --primary-dark: #AD416F;
+            --primary-light: #FCE8F0;
+            --accent: #AD416F;
+            --bg: #FFF5F8;
+            --card: #FFFFFF;
+            --text: #333333;
+            --text-muted: #666666;
+            --border: #F2D5E2;
+            --green: #2E7D32;
+            --red: #C62828;
+            --orange: #E65100;
+            --blue: #1565C0;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        
+        header { background: var(--primary); color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(173, 65, 111, 0.2); }
+        header h1 { margin: 0; font-size: 20px; letter-spacing: 0.3px; }
+        header span { font-size: 13px; cursor: pointer; background: rgba(255,255,255,0.22); padding: 5px 10px; border-radius: 6px; font-weight: 600; transition: 0.2s; }
+        header span:hover { background: rgba(255,255,255,0.35); }
+
+        nav { display: flex; background: var(--primary-dark); overflow-x: auto; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12); }
+        nav button {
+            flex: 0 0 auto; padding: 12px 16px; border: none; background: transparent;
+            color: #fff; font-weight: 600; font-size: 13px; cursor: pointer;
+            border-bottom: 3px solid transparent; white-space: nowrap; transition: 0.2s;
+        }
+        nav button:hover { background: rgba(255,255,255,0.08); }
+        nav button.active { border-bottom: 3px solid var(--primary-light); background: rgba(255,255,255,0.16); }
+
+        .container { max-width: 960px; margin: 20px auto; padding: 0 15px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(217, 107, 154, 0.06); }
+        .card h2 { margin-top: 0; color: var(--primary-dark); font-size: 17px; border-bottom: 1px solid var(--primary-light); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        @media(max-width: 650px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 12px; color: #4A4A4A; }
+        input, textarea, select {
+            width: 100%; padding: 10px; border: 1px solid #DFC2CF; border-radius: 6px; font-size: 14px; background: #FFF; color: var(--text);
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        .btn {
+            background: var(--primary); color: #fff; border: none; padding: 10px 16px;
+            border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; transition: 0.2s;
+        }
+        .btn:hover { background: var(--primary-dark); }
+        .btn-green { background: var(--green); }
+        .btn-green:hover { background: #1B5E20; }
+        .btn-red { background: var(--red); }
+        .btn-red:hover { background: #8E0000; }
+        .btn-blue { background: var(--blue); }
+        .btn-blue:hover { background: #0D47A1; }
+        .btn-orange { background: var(--orange); }
+        .btn-outline { background: var(--primary-light); color: var(--primary-dark); border: 1px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: #fff; }
+        .btn-small { padding: 6px 10px; font-size: 11px; width: auto; }
+        .btn-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .stat-box { background: #FFF; border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; box-shadow: 0 2px 5px rgba(217, 107, 154, 0.05); }
+        .stat-box h3 { margin: 0 0 8px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-box span { font-size: 22px; font-weight: bold; color: var(--primary-dark); }
+
+        .item-list { list-style: none; padding: 0; margin: 0; }
+        .item-list li {
+            border-bottom: 1px solid var(--primary-light); padding: 12px 0;
+            display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+        }
+        .item-list li:last-child { border-bottom: none; }
+        .item-inactive { opacity: 0.55; background: #FAFAFA; padding: 10px !important; border-radius: 6px; }
+        
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; }
+        .badge-pink { background: var(--primary-light); color: var(--primary-dark); }
+        .badge-aguardando { background: #FFF3E0; color: #E65100; }
+        .badge-aprovado { background: #E8F5E9; color: #2E7D32; }
+        .badge-andamento { background: var(--primary-light); color: var(--primary-dark); }
+        .badge-pronto { background: #E8F5E9; color: #1B5E20; }
+        .badge-entregue { background: #ECEFF1; color: #37474F; }
+        .badge-cancelado { background: #FFEBEE; color: #C62828; }
+
+        .cat-pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
+        .cat-pill {
+            padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+            background: #FFF; color: var(--text); font-size: 12px; font-weight: 600;
+            cursor: pointer; white-space: nowrap; transition: 0.2s;
+        }
+        .cat-pill.active, .cat-pill:hover { background: var(--primary); color: #FFF; border-color: var(--primary); }
+
+        #modalPin { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(74, 14, 53, 0.75); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .pin-box { background: #fff; padding: 24px; border-radius: 10px; width: 300px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+        @media print {
+            body { background: #fff !important; padding: 0 !important; margin: 0 !important; }
+            header, nav, .btn, .btn-row, select, label[for="selectOsImpressao"], #impressao h2, #impressao .form-group:first-of-type, #impressao label { display: none !important; }
+            .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .card { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+            #textoRecibo {
+                border: none !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 450px !important;
+                font-size: 14px !important;
+                color: #000 !important;
+                resize: none !important;
+                overflow: visible !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="modalPin" style="display:none;">
+    <div class="pin-box">
+        <h3 style="color:var(--primary-dark); margin-top:0;">Segurança Ateliê</h3>
+        <p style="font-size:13px; color:var(--text-muted);">Insira o PIN de acesso (Padrão: 1234)</p>
+        <input type="password" id="inputPin" maxlength="4" style="text-align:center; font-size:24px; letter-spacing:8px; margin-bottom:15px;" placeholder="••••">
+        <button class="btn" onclick="verificarPin()">Entrar</button>
+    </div>
+</div>
+
+<header>
+    <h1 id="headerTitulo">Cantinho da Costura</h1>
+    <span onclick="bloquearSistema()">Bloquear</span>
+</header>
+
+<nav>
+    <button class="active" onclick="mudarAba('dash', this)">Dashboard</button>
+    <button onclick="mudarAba('clientes', this)">Clientes</button>
+    <button onclick="mudarAba('pdv', this)">PDV / Caixa Rápido</button>
+    <button onclick="mudarAba('os', this)">Ordens de Serviço</button>
+    <button onclick="mudarAba('orcamentos', this)">Orçamentos</button>
+    <button onclick="mudarAba('catalogo', this)">Catálogo</button>
+    <button onclick="mudarAba('financeiro', this)">Financeiro</button>
+    <button onclick="mudarAba('relatorios', this)">Relatórios</button>
+    <button onclick="mudarAba('impressao', this)">Impressão</button>
+    <button onclick="mudarAba('config', this)">Configurações</button>
+</nav>
+
+<div class="container">
+    <!-- DASHBOARD -->
+    <div id="dash" class="tab-content active">
+        <div class="stats-grid">
+            <div class="stat-box"><h3>Faturamento</h3><span id="dashFaturamento">R$ 0,00</span></div>
+            <div class="stat-box"><h3>OS Ativas</h3><span id="dashOsAndamento">0</span></div>
+            <div class="stat-box"><h3>Orçamentos</h3><span id="dashOrcPendentes">0</span></div>
+            <div class="stat-box"><h3>Caixa Atual</h3><span id="dashCaixa">R$ 0,00</span></div>
+        </div>
+        <div class="card">
+            <h2>Ordens de Serviço Recentes</h2>
+            <ul id="dashListaOs" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div id="clientes" class="tab-content">
+        <div class="card">
+            <h2 id="tituloCardCliente">Novo Cadastro de Cliente</h2>
+            <input type="hidden" id="cliEditId">
+            <div class="grid-2">
+                <div class="form-group"><label>Nome Completo *</label><input type="text" id="cliNome"></div>
+                <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="cliTel"></div>
+            </div>
+            <div class="form-group">
+                <label>Ficha de Medidas</label>
+                <textarea id="cliMedidas" rows="3" placeholder="Busto, Cintura, Quadril, Comprimento..."></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn" id="btnSalvarCliente" onclick="salvarCliente()">Salvar Cliente</button>
+                <button class="btn btn-red btn-small" id="btnCancelarCliente" style="display:none;" onclick="limparCliente()">Cancelar</button>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Lista de Clientes</h2>
+            <input type="text" id="buscaCliente" placeholder="Pesquisar cliente..." onkeyup="renderClientes()" style="margin-bottom:10px;">
+            <ul id="listaClientes" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- PDV / CAIXA RÁPIDO -->
+    <div id="pdv" class="tab-content">
+        <div class="card">
+            <h2>PDV - Caixa Rápido do Ateliê</h2>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Cliente (Opcional)</label>
+                    <input type="text" id="pdvCliente" list="listaClientesPdv" placeholder="Ex: Cliente Balcão ou Nome">
+                    <datalist id="listaClientesPdv"></datalist>
+                </div>
+                <div class="form-group">
+                    <label>Forma de Pagamento</label>
+                    <select id="pdvPagamento">
+                        <option value="PIX">PIX</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão">Cartão</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status do Atendimento</label>
+                    <select id="pdvStatus">
+                        <option value="Entregue" selected>Entregue (Venda/Serviço Direto)</option>
+                        <option value="Em Andamento">Em Andamento (Deixou Peça)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="background: var(--bg); border: 1px dashed var(--primary); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <label style="color: var(--primary-dark); font-weight: bold; margin-bottom: 6px;">Adicionar Serviço / Item ao Caixa</label>
+                <div class="grid-3" style="gap:8px; margin-bottom:8px;">
+                    <div style="grid-column: span 2;">
+                        <select id="pdvSelectCatalogo">
+                            <option value="">-- Selecione um serviço do catálogo --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="number" id="pdvQtd" value="1" min="1" placeholder="Qtd">
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-small" onclick="adicionarItemPdv()">+ Adicionar ao PDV</button>
+            </div>
+
+            <div class="form-group">
+                <label>Itens no Caixa (Quantidade e Valor Unitário Editáveis):</label>
+                <div id="listaItensPdv" style="background:#fff; border:1px solid var(--border); border-radius:6px; padding:10px; max-height:220px; overflow-y:auto;">
+                    <p style="color:#777; font-size:13px; margin:0;">Nenhum item no caixa ainda.</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Desconto (R$)</label>
+                    <input type="number" step="0.01" id="pdvDesconto" value="0.00" onchange="renderPdv()">
+                </div>
+                <div class="form-group">
+                    <label>Valor Recebido (R$) - Para Troco</label>
+                    <input type="number" step="0.01" id="pdvRecebido" placeholder="0.00" oninput="calcularTrocoPdv()">
+                </div>
+            </div>
+
+            <div style="background: var(--primary-light); padding: 12px; border-radius: 8px; margin-bottom: 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <strong style="font-size:16px; color:var(--primary-dark);">TOTAL A PAGAR: <span id="pdvTotalDisplay">R$ 0,00</span></strong>
+                </div>
+                <div>
+                    <strong style="font-size:15px; color:var(--green);">TROCO: <span id="pdvTrocoDisplay">R$ 0,00</span></strong>
+                </div>
+            </div>
+
+            <button class="btn btn-green" onclick="finalizarVendaPdv()">✅ Finalizar Venda / Gerar OS e Enviar WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- ORDENS DE SERVIÇO -->
+    <div id="os" class="tab-content">
+        <div class="card">
+            <h2>Nova Ordem de Serviço (OS) com Múltiplas Peças</h2>
+            <div class="grid-2">
+                <div class="form-group"><label>Cliente *</label><select id="osCliente"></select></div>
+                <div class="form-group">
+                    <label>Status da OS</label>
+                    <select id="osStatus">
+                        <option value="Aguardando Tecido/Aviamento">1. Aguardando Tecido/Aviamento</option>
+                        <option value="Orçamento">2. Orçamento</option>
+                        <option value="Orçamento Aprovado">3. Orçamento Aprovado</option>
+                        <option value="Em Andamento" selected>4. Em Andamento</option>
+                        <option value="Aguardando Prova">5. Aguardando Prova</option>
+                        <option value="Pronto">6. Pronto</option>
+                        <option value="Entregue">7. Entregue</option>
+                        <option value="Cancelado">8. Cancelado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="background: var(--bg); border: 1px dashed var(--primary); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <label style="color: var(--primary-dark); font-weight: bold; margin-bottom: 6px;">Adicionar Peças / Serviços do Catálogo à OS</label>
+                <div class="grid-3" style="gap:8px; margin-bottom:8px;">
+                    <div style="grid-column: span 2;">
+                        <select id="osSelectCatalogo">
+                            <option value="">-- Selecione um serviço --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="number" id="osQtdItem" value="1" min="1" placeholder="Qtd">
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-small" onclick="adicionarItemOsCarrinho()">+ Adicionar Peça/Serviço à Lista</button>
+            </div>
+
+            <div class="form-group">
+                <label>Itens Adicionados na OS (Você pode editar diretamente o valor unitário de cada item abaixo):</label>
+                <div id="listaItensCarrinhoOs" style="background:#fff; border:1px solid var(--border); border-radius:6px; padding:10px; max-height:220px; overflow-y:auto;">
+                    <p style="color:#777; font-size:13px; margin:0;">Nenhum item adicionado ainda.</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group"><label>Valor Total calculado (R$) * (Editável se preferir)</label><input type="number" step="0.01" id="osValor"></div>
+                <div class="form-group"><label>Data de Entrega</label><input type="date" id="osEntrega"></div>
+            </div>
+            <div class="form-group"><label>Observações / Descrição Geral</label><textarea id="osDesc" rows="2" placeholder="Ex: Sacola com 10 peças variadas..."></textarea></div>
+            <button class="btn" onclick="salvarOs()">Criar Ordem de Serviço</button>
+        </div>
+        <div class="card">
+            <h2>Ordens de Serviço Cadastradas</h2>
+            <ul id="listaOs" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- ORÇAMENTOS -->
+    <div id="orcamentos" class="tab-content">
+        <div class="card">
+            <h2>Novo Orçamento</h2>
+            <div class="form-group">
+                <label>Preencher Rápido do Catálogo (Opcional)</label>
+                <select id="orcSelectCatalogo" onchange="aplicarServicoNoOrcamento()">
+                    <option value="">-- Selecione um serviço do catálogo --</option>
+                </select>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Cliente *</label><input type="text" id="orcCliente"></div>
+                <div class="form-group"><label>Valor Estimado (R$) *</label><input type="number" step="0.01" id="orcValor"></div>
+            </div>
+            <div class="form-group"><label>Descrição *</label><textarea id="orcDesc" rows="2"></textarea></div>
+            <button class="btn" onclick="salvarOrcamento()">Gerar Orçamento</button>
+        </div>
+        <div class="card">
+            <h2>Orçamentos</h2>
+            <ul id="listaOrcamentos" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- CATÁLOGO DE SERVIÇOS -->
+    <div id="catalogo" class="tab-content">
+        <div class="card">
+            <h2 id="tituloFormCatalogo">Cadastrar / Editar Serviço no Catálogo</h2>
+            <input type="hidden" id="catEditId">
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Nome do Serviço *</label>
+                    <input type="text" id="catNome" placeholder="Ex: Bainha de calça jeans">
+                </div>
+                <div class="form-group">
+                    <label>Categoria *</label>
+                    <select id="catCategoria">
+                        <option value="BAINHAS">BAINHAS</option>
+                        <option value="AJUSTES DE ROUPAS">AJUSTES DE ROUPAS</option>
+                        <option value="ZÍPERES E FECHAMENTOS">ZÍPERES E FECHAMENTOS</option>
+                        <option value="CALÇAS">CALÇAS</option>
+                        <option value="VESTIDOS E SAIAS">VESTIDOS E SAIAS</option>
+                        <option value="CAMISAS E BLUSAS">CAMISAS E BLUSAS</option>
+                        <option value="CONCERTOS E REFORMAS">CONCERTOS E REFORMAS</option>
+                        <option value="CONFECÇÃO E SERVIÇOS ESPECIAIS">CONFECÇÃO E SERVIÇOS ESPECIAIS</option>
+                        <option value="CORTINAS E OUTROS">CORTINAS E OUTROS</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Preço Base (R$) *</label>
+                    <input type="number" step="0.01" id="catPreco" placeholder="0.00">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Descrição do Serviço</label>
+                    <input type="text" id="catDesc" placeholder="Detalhes do acabamento ou técnica">
+                </div>
+                <div class="form-group">
+                    <label>Prazo Estimado</label>
+                    <input type="text" id="catPrazo" placeholder="Ex: 2 dias úteis">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Observações Internas</label>
+                <input type="text" id="catObs" placeholder="Ex: Verificar necessidade de linha especial">
+            </div>
+            <div class="btn-row">
+                <button class="btn" id="btnSalvarServico" onclick="salvarServicoCatalogo()">Salvar Serviço no Catálogo</button>
+                <button class="btn btn-red btn-small" id="btnCancelarServico" style="display:none;" onclick="limparFormCatalogo()">Cancelar Edição</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>
+                <span>Catálogo de Serviços (<span id="contadorCatalogo">0</span>)</span>
+                <button class="btn btn-outline btn-small" onclick="restaurarCatalogoPadrao()">Restaurar 55+ Serviços Padrão</button>
+            </h2>
+            
+            <div class="cat-pills" id="filtroCategoriasPills"></div>
+
+            <div class="grid-2" style="margin-bottom:10px;">
+                <input type="text" id="buscaServico" placeholder="Buscar serviço por nome ou descrição..." onkeyup="renderCatalogo()">
+                <select id="filtroStatusCatalogo" onchange="renderCatalogo()">
+                    <option value="TODOS">Mostrar: Todos os Serviços</option>
+                    <option value="ATIVOS" selected>Mostrar: Apenas Ativos</option>
+                    <option value="INATIVOS">Mostrar: Apenas Inativos</option>
+                </select>
+            </div>
+            <ul id="listaCatalogo" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- FINANCEIRO -->
+    <div id="financeiro" class="tab-content">
+        <div class="stats-grid">
+            <div class="stat-box"><h3>Saldo em Caixa</h3><span id="finSaldoCaixa">R$ 0,00</span></div>
+            <div class="stat-box"><h3>Despesas</h3><span id="finTotalDespesas" style="color:var(--red);">R$ 0,00</span></div>
+        </div>
+        <div class="card">
+            <h2>Lançar Despesa</h2>
+            <div class="grid-2">
+                <div class="form-group"><label>Descrição *</label><input type="text" id="despDesc"></div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="despCat">
+                        <option value="Aviamentos e Tecidos">Aviamentos e Tecidos</option>
+                        <option value="Manutenção de Máquinas">Manutenção de Máquinas</option>
+                        <option value="Aluguel / Utilidades">Aluguel / Utilidades</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Valor (R$) *</label><input type="number" step="0.01" id="despValor"></div>
+                <div class="form-group"><label>Forma de Pagamento</label><select id="despForma"><option value="Dinheiro">Dinheiro</option><option value="PIX">PIX</option><option value="Cartão">Cartão</option></select></div>
+            </div>
+            <button class="btn btn-red" onclick="lancarDespesa()">Registrar Despesa</button>
+        </div>
+        <div class="card">
+            <h2>Extrato Financeiro</h2>
+            <ul id="listaFinanceiro" class="item-list"></ul>
+        </div>
+    </div>
+
+    <!-- RELATÓRIOS -->
+    <div id="relatorios" class="tab-content">
+        <div class="card">
+            <h2>Relatórios</h2>
+            <button class="btn" onclick="gerarRelatorioHtml()">Gerar Relatório Completo</button>
+        </div>
+        <div class="card" id="cardRelatorioExportado" style="display:none;">
+            <div id="conteudoRelatorio"></div>
+            <button class="btn btn-green" style="margin-top:10px;" onclick="window.print()">Imprimir / Salvar PDF</button>
+        </div>
+    </div>
+
+    <!-- IMPRESSÃO -->
+    <div id="impressao" class="tab-content">
+        <div class="card">
+            <h2>Impressão Térmica ESC/POS</h2>
+            <div class="form-group"><label>Selecionar OS:</label><select id="selectOsImpressao" onchange="preencherReciboOs()"></select></div>
+            <div class="form-group"><label>Recibo:</label><textarea id="textoRecibo" rows="14" style="font-family:monospace;"></textarea></div>
+            <div class="btn-row">
+                <button class="btn" onclick="conectarImprimirBluetooth()">Imprimir via Bluetooth</button>
+                <button class="btn btn-green" onclick="window.print()">Imprimir no Navegador</button>
+                <button class="btn" style="background-color: #25D366;" onclick="enviarReciboWhatsApp()">📲 Compartilhar via WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
+    <div id="config" class="tab-content">
+        <div class="card">
+            <h2>Configurações</h2>
+            <div class="form-group"><label>Nome do Ateliê</label><input type="text" id="confNome"></div>
+            <div class="form-group"><label>Telefone</label><input type="text" id="confTel"></div>
+            <div class="form-group"><label>PIN (4 dígitos)</label><input type="password" id="confPin" maxlength="4"></div>
+            <button class="btn" onclick="salvarConfig()">Salvar</button>
+        </div>
+        <div class="card">
+            <h2>Backup Offline</h2>
+            <div class="btn-row">
+                <button class="btn btn-outline" onclick="exportarBackup()">Baixar Backup (.json)</button>
+                <button class="btn btn-green" onclick="document.getElementById('importFile').click()">Restaurar Backup</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarBackup(event)">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const CATEGORIAS_LISTA = [
+        "TODOS",
+        "BAINHAS",
+        "AJUSTES DE ROUPAS",
+        "ZÍPERES E FECHAMENTOS",
+        "CALÇAS",
+        "VESTIDOS E SAIAS",
+        "CAMISAS E BLUSAS",
+        "CONCERTOS E REFORMAS",
+        "CONFECÇÃO E SERVIÇOS ESPECIAIS",
+        "CORTINAS E OUTROS"
+    ];
+
+    const CATALOGO_PADRAO_55 = [
+        { id: 101, nome: "Bainha de calça social", categoria: "BAINHAS", desc: "Bainha invisível feita à mão.", preco: 30.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 102, nome: "Bainha de calça jeans", categoria: "BAINHAS", desc: "Bainha simples pespontada.", preco: 25.00, prazo: "1 dia", obs: "", ativo: true },
+        { id: 103, nome: "Bainha de calça com original", categoria: "BAINHAS", desc: "Mantém a barra original.", preco: 35.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 104, nome: "Bainha de vestido", categoria: "BAINHAS", desc: "Ajuste de barra.", preco: 40.00, prazo: "3 dias", obs: "", ativo: true },
+        { id: 105, nome: "Bainha de saia", categoria: "BAINHAS", desc: "Ajuste de barra simples.", preco: 30.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 201, nome: "Ajuste de cintura", categoria: "AJUSTES DE ROUPAS", desc: "Pences ou redução.", preco: 35.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 202, nome: "Ajuste de quadril", categoria: "AJUSTES DE ROUPAS", desc: "Modelagem lateral.", preco: 35.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 203, nome: "Ajuste de laterais", categoria: "AJUSTES DE ROUPAS", desc: "Estreitamento geral.", preco: 35.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 301, nome: "Troca de zíper de calça", categoria: "ZÍPERES E FECHAMENTOS", desc: "Substituição de zíper.", preco: 30.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 302, nome: "Troca de zíper de vestido", categoria: "ZÍPERES E FECHAMENTOS", desc: "Zíper comum ou invisível.", preco: 40.00, prazo: "2 dias", obs: "", ativo: true },
+        { id: 305, nome: "Reparo de zíper", categoria: "ZÍPERES E FECHAMENTOS", desc: "Realinhamento de dentes.", preco: 18.00, prazo: "1 dia", obs: "", ativo: true },
+        { id: 306, nome: "Troca de cursor", categoria: "ZÍPERES E FECHAMENTOS", desc: "Substituição de carrinho.", preco: 15.00, prazo: "1 dia", obs: "", ativo: true },
+        { id: 405, nome: "Troca de elástico", categoria: "CALÇAS", desc: "Substituição de elástico no cós/peça.", preco: 25.00, prazo: "1 dia", obs: "", ativo: true },
+        { id: 701, nome: "Reparo de costura aberta", categoria: "CONCERTOS E REFORMAS", desc: "Fechamento de costuras.", preco: 15.00, prazo: "1 dia", obs: "", ativo: true },
+        { id: 702, nome: "Conserto de rasgos", categoria: "CONCERTOS E REFORMAS", desc: "Cerzido ou costura interna.", preco: 25.00, prazo: "2 dias", obs: "", ativo: true }
+    ];
+
+    let categoriaSelecionadaFiltro = "TODOS";
+    let itensCarrinhoOs = [];
+
+    let db = JSON.parse(localStorage.getItem('cantinho_db_v2')) || {
+        config: { nome: "Cantinho da Costura", tel: "(73) 99999-9999", pin: "1234" },
+        clientes: [], os: [], orcamentos: [], financeiro: [],
+        catalogo: JSON.parse(JSON.stringify(CATALOGO_PADRAO_55))
+    };
+
+    if (!db.catalogo || db.catalogo.length <= 5) {
+        db.catalogo = JSON.parse(JSON.stringify(CATALOGO_PADRAO_55));
+        localStorage.setItem('cantinho_db_v2', JSON.stringify(db));
+    }
+
+    function salvarDb() { 
+        try {
+            localStorage.setItem('cantinho_db_v2', JSON.stringify(db));
+        } catch (err) {
+            alert('Aviso: Não foi possível salvar no navegador. Verifique se o modo anônimo ou bloqueio de armazenamento está ativo.');
+        }
+        atualizarDashboard(); 
+    }
+
+    function verificarPin() {
+        if(document.getElementById('inputPin').value === db.config.pin) {
+            document.getElementById('modalPin').style.display = 'none';
+            document.getElementById('inputPin').value = '';
+        } else alert('PIN incorreto!');
+    }
+    function bloquearSistema() { document.getElementById('modalPin').style.display = 'flex'; }
+
+    function mudarAba(id, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(btn) btn.classList.add('active');
+        if(id === 'pdv') { atualizarPdvSelects(); renderPdv(); }
+        if(id === 'os') { atualizarSelectClientesOs(); atualizarSelectsCatalogoIntegracao(); }
+        if(id === 'orcamentos') { atualizarSelectsCatalogoIntegracao(); }
+        if(id === 'impressao') atualizarSelectImpressao();
+        if(id === 'catalogo') { renderFiltroCategorias(); renderCatalogo(); }
+    }
+
+    function init() {
+        document.getElementById('headerTitulo').textContent = db.config.nome;
+        document.getElementById('confNome').value = db.config.nome;
+        document.getElementById('confTel').value = db.config.tel;
+        document.getElementById('confPin').value = db.config.pin;
+        renderClientes();
+        renderOs();
+        renderOrcamentos();
+        renderFiltroCategorias();
+        renderCatalogo();
+        renderFinanceiro();
+        atualizarSelectsCatalogoIntegracao();
+        atualizarPdvSelects();
+        renderPdv();
+        atualizarDashboard();
+    }
+
+    // DASHBOARD
+    function atualizarDashboard() {
+        let faturamento = 0, osAndamento = 0, orcPendentes = 0, entradas = 0, despesas = 0;
+        db.os.forEach(o => {
+            if(o.status === 'Entregue' || o.status === 'Pronto') faturamento += o.valor;
+            if(o.status !== 'Entregue' && o.status !== 'Cancelado') osAndamento++;
+        });
+        db.orcamentos.forEach(or => { if(or.status === 'Pendente') orcPendentes++; });
+        db.financeiro.forEach(f => { if(f.tipo === 'ENTRADA') entradas += f.valor; else despesas += f.valor; });
+        document.getElementById('dashFaturamento').textContent = `R$ ${faturamento.toFixed(2).replace('.', ',')}`;
+        document.getElementById('dashOsAndamento').textContent = osAndamento;
+        document.getElementById('dashOrcPendentes').textContent = orcPendentes;
+        document.getElementById('dashCaixa').textContent = `R$ ${(entradas - despesas).toFixed(2).replace('.', ',')}`;
+        const ul = document.getElementById('dashListaOs'); ul.innerHTML = '';
+        db.os.slice(0, 5).forEach(o => { 
+            ul.innerHTML += `<li><div><strong>${o.cliente}</strong> - ${o.desc}<br><small><span class="badge badge-pink">${o.status}</span> | R$ ${o.valor.toFixed(2).replace('.', ',')}</small></div></li>`; 
+        });
+        if(db.os.length === 0) ul.innerHTML = '<li>Nenhuma Ordem de Serviço recente.</li>';
+    }
+
+    // CLIENTES
+    function salvarCliente() {
+        const id = document.getElementById('cliEditId').value, nome = document.getElementById('cliNome').value.trim(), tel = document.getElementById('cliTel').value.trim(), medidas = document.getElementById('cliMedidas').value.trim();
+        if(!nome) return alert('Informe o nome.');
+        if(id) { const c = db.clientes.find(x => x.id == id); if(c) { c.nome = nome; c.tel = tel; c.medidas = medidas; } }
+        else db.clientes.unshift({ id: Date.now(), nome, tel, medidas });
+        salvarDb(); limparCliente(); renderClientes();
+    }
+    function limparCliente() {
+        document.getElementById('cliEditId').value = ''; document.getElementById('cliNome').value = ''; document.getElementById('cliTel').value = ''; document.getElementById('cliMedidas').value = '';
+        document.getElementById('btnCancelarCliente').style.display = 'none';
+    }
+    function editarCliente(id) {
+        const c = db.clientes.find(x => x.id == id);
+        if(c) { document.getElementById('cliEditId').value = c.id; document.getElementById('cliNome').value = c.nome; document.getElementById('cliTel').value = c.tel; document.getElementById('cliMedidas').value = c.medidas; document.getElementById('btnCancelarCliente').style.display = 'block'; }
+    }
+    function excluirCliente(id) { if(confirm('Excluir cliente?')) { db.clientes = db.clientes.filter(c => c.id != id); salvarDb(); renderClientes(); } }
+    function renderClientes() {
+        const filtro = document.getElementById('buscaCliente').value.toLowerCase(), ul = document.getElementById('listaClientes'); ul.innerHTML = '';
+        db.clientes.filter(c => c.nome.toLowerCase().includes(filtro)).forEach(c => {
+            ul.innerHTML += `<li><div><strong>${c.nome}</strong> ${c.tel}<br><small>${c.medidas}</small></div><div class="btn-row"><button class="btn btn-blue btn-small" onclick="editarCliente(${c.id})">Editar</button><button class="btn btn-red btn-small" onclick="excluirCliente(${c.id})">X</button></div></li>`;
+        });
+    }
+    function atualizarSelectClientesOs() {
+        const sel = document.getElementById('osCliente'); sel.innerHTML = '<option value="">-- Selecione --</option>';
+        db.clientes.forEach(c => sel.innerHTML += `<option value="${c.nome}">${c.nome}</option>`);
+    }
+
+    // ==========================================
+    // PDV / CAIXA RÁPIDO
+    // ==========================================
+    let itensPdv = [];
+
+    function atualizarPdvSelects() {
+        const ativos = db.catalogo.filter(s => s.ativo !== false);
+        const sel = document.getElementById('pdvSelectCatalogo');
+        if (sel) {
+            let htmlOpt = '<option value="">-- Selecione um serviço do catálogo --</option>';
+            ativos.forEach(s => {
+                htmlOpt += `<option value="${s.id}">[${s.categoria}] ${s.nome} - R$ ${s.preco.toFixed(2).replace('.', ',')}</option>`;
+            });
+            sel.innerHTML = htmlOpt;
+        }
+        const dl = document.getElementById('listaClientesPdv');
+        if (dl) {
+            dl.innerHTML = '';
+            db.clientes.forEach(c => {
+                dl.innerHTML += `<option value="${c.nome}">`;
+            });
+        }
+    }
+
+    function adicionarItemPdv() {
+        const sId = document.getElementById('pdvSelectCatalogo').value;
+        const qtd = parseInt(document.getElementById('pdvQtd').value) || 1;
+        if (!sId) return alert('Selecione um serviço no PDV.');
+        const servico = db.catalogo.find(s => s.id == sId);
+        if (!servico) return;
+
+        itensPdv.push({
+            id: Date.now() + Math.random(),
+            nome: servico.nome,
+            precoUnit: servico.preco,
+            quantidade: qtd
+        });
+
+        document.getElementById('pdvQtd').value = 1;
+        document.getElementById('pdvSelectCatalogo').value = '';
+        renderPdv();
+    }
+
+    function atualizarItemPdv(id, campo, valor) {
+        const item = itensPdv.find(i => i.id == id);
+        if (item) {
+            if (campo === 'qtd') item.quantidade = parseInt(valor) || 1;
+            if (campo === 'preco') item.precoUnit = parseFloat(valor) || 0;
+            renderPdv();
+        }
+    }
+
+    function removerItemPdv(id) {
+        itensPdv = itensPdv.filter(i => i.id != id);
+        renderPdv();
+    }
+
+    function obterTotalPdv() {
+        let subtotal = 0;
+        itensPdv.forEach(i => subtotal += (i.quantidade * i.precoUnit));
+        const desc = parseFloat(document.getElementById('pdvDesconto').value) || 0;
+        return Math.max(0, subtotal - desc);
+    }
+
+    function calcularTrocoPdv() {
+        const total = obterTotalPdv();
+        const recebido = parseFloat(document.getElementById('pdvRecebido').value) || 0;
+        const troco = recebido > total ? (recebido - total) : 0;
+        document.getElementById('pdvTrocoDisplay').textContent = `R$ ${troco.toFixed(2).replace('.', ',')}`;
+    }
+
+    function renderPdv() {
+        const container = document.getElementById('listaItensPdv');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (itensPdv.length === 0) {
+            container.innerHTML = '<p style="color:#777; font-size:13px; margin:0;">Nenhum item no caixa ainda.</p>';
+            document.getElementById('pdvTotalDisplay').textContent = 'R$ 0,00';
+            calcularTrocoPdv();
+            return;
+        }
+
+        itensPdv.forEach(item => {
+            const sub = item.quantidade * item.precoUnit;
+            const div = document.createElement('div');
+            div.style.cssText = "display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid #fce8f0;";
+            div.innerHTML = `
+                <div style="flex:2;"><strong>${item.nome}</strong></div>
+                <div style="flex:1;">
+                    <label style="font-size:10px; margin:0;">Qtd</label>
+                    <input type="number" min="1" value="${item.quantidade}" style="padding:4px;" onchange="atualizarItemPdv(${item.id}, 'qtd', this.value)">
+                </div>
+                <div style="flex:1.2;">
+                    <label style="font-size:10px; margin:0;">Unit. (R$)</label>
+                    <input type="number" step="0.01" value="${item.precoUnit.toFixed(2)}" style="padding:4px;" onchange="atualizarItemPdv(${item.id}, 'preco', this.value)">
+                </div>
+                <div style="flex:1; text-align:right; font-size:13px; font-weight:bold; color:var(--primary-dark);">
+                    R$ ${sub.toFixed(2).replace('.', ',')}
+                </div>
+                <div>
+                    <button class="btn btn-red btn-small" onclick="removerItemPdv(${item.id})">X</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        const total = obterTotalPdv();
+        document.getElementById('pdvTotalDisplay').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        calcularTrocoPdv();
+    }
+
+    function finalizarVendaPdv() {
+        if (itensPdv.length === 0) return alert('Adicione ao menos um item no PDV.');
+        const cliente = document.getElementById('pdvCliente').value.trim() || 'Cliente Balcão';
+        const pagamento = document.getElementById('pdvPagamento').value;
+        const status = document.getElementById('pdvStatus').value;
+        const total = obterTotalPdv();
+        if (total <= 0) return alert('O valor total deve ser maior que zero.');
+
+        const descItens = itensPdv.map(i => `${i.quantidade}x ${i.nome} (R$ ${i.precoUnit.toFixed(2)})`).join(' | ');
+        const agora = new Date().toLocaleDateString('pt-BR');
+        const novaOsId = Date.now();
+
+        const novaOs = {
+            id: novaOsId,
+            cliente,
+            desc: `${descItens} | Pgto: ${pagamento}`,
+            itens: [...itensPdv],
+            valor: total,
+            status,
+            entrega: '',
+            data: agora
+        };
+
+        db.os.unshift(novaOs);
+        db.financeiro.unshift({
+            id: novaOsId + 1,
+            tipo: 'ENTRADA',
+            desc: `PDV - ${cliente} (${itensPdv.length} itens)`,
+            valor: total,
+            forma: pagamento,
+            data: agora
+        });
+
+        salvarDb();
+        renderOs();
+        renderFinanceiro();
+        atualizarSelectImpressao();
+
+        document.getElementById('selectOsImpressao').value = novaOsId;
+        preencherReciboOs();
+
+        itensPdv = [];
+        document.getElementById('pdvCliente').value = '';
+        document.getElementById('pdvDesconto').value = '0.00';
+        document.getElementById('pdvRecebido').value = '';
+        renderPdv();
+
+        if (confirm('Venda registrada no caixa e OS gerada! Deseja abrir o WhatsApp para enviar o recibo agora?')) {
+            enviarReciboWhatsApp();
+        }
+    }
+
+    // ==========================================
+    // ORDEM DE SERVIÇO COM CARRINHO E VALORES EDITÁVEIS
+    // ==========================================
+    function atualizarSelectsCatalogoIntegracao() {
+        const ativos = db.catalogo.filter(s => s.ativo !== false);
+        const selOs = document.getElementById('osSelectCatalogo');
+        const selOrc = document.getElementById('orcSelectCatalogo');
+        
+        let optionsHtml = '<option value="">-- Selecione um serviço --</option>';
+        ativos.forEach(s => {
+            optionsHtml += `<option value="${s.id}">[${s.categoria}] ${s.nome} - R$ ${s.preco.toFixed(2).replace('.', ',')}</option>`;
+        });
+
+        if (selOs) selOs.innerHTML = optionsHtml;
+        if (selOrc) selOrc.innerHTML = optionsHtml;
+    }
+
+    function adicionarItemOsCarrinho() {
+        const sId = document.getElementById('osSelectCatalogo').value;
+        const qtd = parseInt(document.getElementById('osQtdItem').value) || 1;
+        if(!sId) return alert('Selecione um serviço do catálogo.');
+        
+        const servico = db.catalogo.find(s => s.id == sId);
+        if(!servico) return;
+
+        itensCarrinhoOs.push({
+            id: Date.now() + Math.random(),
+            nome: servico.nome,
+            precoUnit: servico.preco,
+            quantidade: qtd
+        });
+
+        document.getElementById('osQtdItem').value = 1;
+        document.getElementById('osSelectCatalogo').value = '';
+        renderCarrinhoOs();
+    }
+
+    function atualizarItemCarrinho(id, campo, valor) {
+        const item = itensCarrinhoOs.find(i => i.id == id);
+        if(item) {
+            if(campo === 'qtd') item.quantidade = parseInt(valor) || 1;
+            if(campo === 'preco') item.precoUnit = parseFloat(valor) || 0;
+            recalcularTotalCarrinho();
+        }
+    }
+
+    function removerItemCarrinhoOs(id) {
+        itensCarrinhoOs = itensCarrinhoOs.filter(i => i.id != id);
+        renderCarrinhoOs();
+    }
+
+    function recalcularTotalCarrinho() {
+        let totalGeral = 0;
+        itensCarrinhoOs.forEach(item => {
+            totalGeral += (item.quantidade * item.precoUnit);
+        });
+        document.getElementById('osValor').value = totalGeral.toFixed(2);
+    }
+
+    function renderCarrinhoOs() {
+        const container = document.getElementById('listaItensCarrinhoOs');
+        container.innerHTML = '';
+        if(itensCarrinhoOs.length === 0) {
+            container.innerHTML = '<p style="color:#777; font-size:13px; margin:0;">Nenhum item adicionado ainda.</p>';
+            document.getElementById('osValor').value = '0.00';
+            return;
+        }
+
+        let totalGeral = 0;
+        itensCarrinhoOs.forEach(item => {
+            const subtotal = item.quantidade * item.precoUnit;
+            totalGeral += subtotal;
+
+            const div = document.createElement('div');
+            div.style.cssText = "display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid #fce8f0;";
+            div.innerHTML = `
+                <div style="flex:2;">
+                    <strong>${item.nome}</strong>
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:10px; margin:0;">Qtd</label>
+                    <input type="number" min="1" value="${item.quantidade}" style="padding:4px;" onchange="atualizarItemCarrinho(${item.id}, 'qtd', this.value)">
+                </div>
+                <div style="flex:1.2;">
+                    <label style="font-size:10px; margin:0;">Preço Unit. (R$)</label>
+                    <input type="number" step="0.01" value="${item.precoUnit.toFixed(2)}" style="padding:4px;" onchange="atualizarItemCarrinho(${item.id}, 'preco', this.value)">
+                </div>
+                <div style="flex:1; text-align:right; font-size:13px; font-weight:bold; color:var(--primary-dark);">
+                    R$ ${subtotal.toFixed(2).replace('.', ',')}
+                </div>
+                <div>
+                    <button class="btn btn-red btn-small" onclick="removerItemCarrinhoOs(${item.id})">X</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        document.getElementById('osValor').value = totalGeral.toFixed(2);
+    }
+
+    function salvarOs() {
+        const cliente = document.getElementById('osCliente').value;
+        const status = document.getElementById('osStatus').value;
+        const entrega = document.getElementById('osEntrega').value;
+        const obsGeral = document.getElementById('osDesc').value.trim();
+        const valorTotal = parseFloat(document.getElementById('osValor').value);
+
+        if(!cliente) return alert('Selecione o cliente.');
+        if(itensCarrinhoOs.length === 0) return alert('Adicione pelo menos uma peça ou serviço na OS.');
+        if(isNaN(valorTotal) || valorTotal <= 0) return alert('Valor total inválido.');
+
+        let descCompleta = itensCarrinhoOs.map(i => `${i.quantidade}x ${i.nome} (R$ ${i.precoUnit.toFixed(2)})`).join(' | ');
+        if(obsGeral) descCompleta += ` | Obs: ${obsGeral}`;
+
+        const nova = { 
+            id: Date.now(), 
+            cliente, 
+            desc: descCompleta, 
+            itens: [...itensCarrinhoOs],
+            valor: valorTotal, 
+            status, 
+            entrega, 
+            data: new Date().toLocaleDateString('pt-BR') 
+        };
+
+        db.os.unshift(nova);
+        db.financeiro.unshift({ id: Date.now()+1, tipo: 'ENTRADA', desc: `OS - ${cliente} (${itensCarrinhoOs.length} itens)`, valor: valorTotal, forma: 'A Combinar', data: new Date().toLocaleDateString('pt-BR') });
+        
+        salvarDb(); 
+        itensCarrinhoOs = [];
+        renderCarrinhoOs();
+        document.getElementById('osDesc').value = ''; 
+        document.getElementById('osValor').value = ''; 
+        renderOs(); 
+        renderFinanceiro();
+        alert('Ordem de Serviço criada com sucesso!');
+    }
+
+    function atualizarStatusOs(id, st) { const o = db.os.find(x => x.id == id); if(o) { o.status = st; salvarDb(); renderOs(); } }
+    function excluirOs(id) { if(confirm('Excluir OS?')) { db.os = db.os.filter(o => o.id != id); salvarDb(); renderOs(); } }
+    function renderOs() {
+        const ul = document.getElementById('listaOs'); ul.innerHTML = '';
+        if(db.os.length === 0) { ul.innerHTML = '<li>Nenhuma OS cadastrada.</li>'; return; }
+        db.os.forEach(o => {
+            ul.innerHTML += `<li><div><strong>${o.cliente}</strong> - R$ ${o.valor.toFixed(2).replace('.', ',')}<br>${o.desc}<br><small><span class="badge badge-pink">${o.status}</span></small></div><div style="display:flex;flex-direction:column;gap:4px;"><select onchange="atualizarStatusOs(${o.id}, this.value)"><option disabled selected>Status</option><option>Aguardando Tecido/Aviamento</option><option>Orçamento</option><option>Orçamento Aprovado</option><option>Em Andamento</option><option>Aguardando Prova</option><option>Pronto</option><option>Entregue</option><option>Cancelado</option></select><button class="btn btn-red btn-small" onclick="excluirOs(${o.id})">Excluir</button></div></li>`;
+        });
+    }
+
+    // ORÇAMENTOS
+    function salvarOrcamento() {
+        const cliente = document.getElementById('orcCliente').value.trim(), desc = document.getElementById('orcDesc').value.trim(), valor = parseFloat(document.getElementById('orcValor').value);
+        if(!cliente || !desc || isNaN(valor)) return alert('Preencha os campos.');
+        db.orcamentos.unshift({ id: Date.now(), cliente, desc, valor, status: 'Pendente', data: new Date().toLocaleDateString('pt-BR') });
+        salvarDb(); document.getElementById('orcCliente').value = ''; document.getElementById('orcDesc').value = ''; document.getElementById('orcValor').value = ''; document.getElementById('orcSelectCatalogo').value = ''; renderOrcamentos();
+        alert('Orçamento gerado!');
+    }
+    function converterOrcamentoParaOs(id) {
+        const orc = db.orcamentos.find(x => x.id == id);
+        if(orc) { 
+            orc.status = 'Aprovado'; 
+            db.os.unshift({ id: Date.now(), cliente: orc.cliente, desc: orc.desc, valor: orc.valor, status: 'Em Andamento', data: new Date().toLocaleDateString('pt-BR') }); 
+            salvarDb(); renderOrcamentos(); renderOs(); 
+            alert('Orçamento aprovado e convertido em Ordem de Serviço!');
+        }
+    }
+    function excluirOrcamento(id) {
+        if(!confirm('Deseja realmente excluir este orçamento?')) return;
+        db.orcamentos = db.orcamentos.filter(or => or.id != id);
+        salvarDb();
+        renderOrcamentos();
+    }
+    function renderOrcamentos() {
+        const ul = document.getElementById('listaOrcamentos'); ul.innerHTML = '';
+        if(db.orcamentos.length === 0) { ul.innerHTML = '<li>Nenhum orçamento cadastrado.</li>'; return; }
+        db.orcamentos.forEach(or => {
+            ul.innerHTML += `<li>
+                <div><strong>${or.cliente}</strong> - R$ ${or.valor.toFixed(2).replace('.', ',')}<br>${or.desc} (<span class="badge badge-pink">${or.status}</span>)</div>
+                <div class="btn-row" style="justify-content:flex-end;">
+                    ${or.status === 'Pendente' ? `<button class="btn btn-green btn-small" onclick="converterOrcamentoParaOs(${or.id})">Aprovar OS</button>` : ''}
+                    <button class="btn btn-red btn-small" onclick="excluirOrcamento(${or.id})">X</button>
+                </div>
+            </li>`;
+        });
+    }
+
+    // CATÁLOGO DE SERVIÇOS
+    function renderFiltroCategorias() {
+        const container = document.getElementById('filtroCategoriasPills');
+        container.innerHTML = '';
+        CATEGORIAS_LISTA.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'cat-pill' + (categoriaSelecionadaFiltro === cat ? ' active' : '');
+            btn.textContent = cat;
+            btn.onclick = () => {
+                categoriaSelecionadaFiltro = cat;
+                renderFiltroCategorias();
+                renderCatalogo();
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function salvarServicoCatalogo() {
+        const editId = document.getElementById('catEditId').value;
+        const nome = document.getElementById('catNome').value.trim();
+        const categoria = document.getElementById('catCategoria').value;
+        const preco = parseFloat(document.getElementById('catPreco').value);
+        const desc = document.getElementById('catDesc').value.trim();
+        const prazo = document.getElementById('catPrazo').value.trim();
+        const obs = document.getElementById('catObs').value.trim();
+
+        if (!nome || isNaN(preco)) return alert('Preencha o Nome e o Preço.');
+
+        if (editId) {
+            const srv = db.catalogo.find(s => s.id == editId);
+            if (srv) { srv.nome = nome; srv.categoria = categoria; srv.preco = preco; srv.desc = desc; srv.prazo = prazo; srv.obs = obs; }
+        } else {
+            db.catalogo.unshift({ id: Date.now(), nome, categoria, desc, preco, prazo: prazo || '2 dias', obs, ativo: true });
+        }
+        salvarDb(); limparFormCatalogo(); renderCatalogo(); atualizarSelectsCatalogoIntegracao();
+        alert('Serviço salvo no catálogo!');
+    }
+
+    function editarServicoCatalogo(id) {
+        const s = db.catalogo.find(x => x.id == id);
+        if (!s) return;
+        document.getElementById('catEditId').value = s.id;
+        document.getElementById('catNome').value = s.nome;
+        document.getElementById('catCategoria').value = s.categoria;
+        document.getElementById('catPreco').value = s.preco;
+        document.getElementById('catDesc').value = s.desc || '';
+        document.getElementById('catPrazo').value = s.prazo || '';
+        document.getElementById('catObs').value = s.obs || '';
+        document.getElementById('tituloFormCatalogo').textContent = 'Editando Serviço';
+        document.getElementById('btnSalvarServico').textContent = 'Atualizar Serviço';
+        document.getElementById('btnCancelarServico').style.display = 'inline-block';
+    }
+
+    function limparFormCatalogo() {
+        document.getElementById('catEditId').value = '';
+        document.getElementById('catNome').value = '';
+        document.getElementById('catPreco').value = '';
+        document.getElementById('catDesc').value = '';
+        document.getElementById('catPrazo').value = '';
+        document.getElementById('catObs').value = '';
+        document.getElementById('tituloFormCatalogo').textContent = 'Cadastrar / Editar Serviço no Catálogo';
+        document.getElementById('btnSalvarServico').textContent = 'Salvar Serviço no Catálogo';
+        document.getElementById('btnCancelarServico').style.display = 'none';
+    }
+
+    function alternarAtivoServico(id) {
+        const s = db.catalogo.find(x => x.id == id);
+        if (s) { s.ativo = s.ativo === false ? true : false; salvarDb(); renderCatalogo(); atualizarSelectsCatalogoIntegracao(); }
+    }
+
+    function excluirServicoCatalogo(id) {
+        if (!confirm('Excluir serviço?')) return;
+        db.catalogo = db.catalogo.filter(s => s.id != id);
+        salvarDb(); renderCatalogo(); atualizarSelectsCatalogoIntegracao();
+    }
+
+    function restaurarCatalogoPadrao() {
+        if (!confirm('Restaurar serviços padrão?')) return;
+        db.catalogo = JSON.parse(JSON.stringify(CATALOGO_PADRAO_55));
+        salvarDb(); renderCatalogo(); atualizarSelectsCatalogoIntegracao();
+        alert('Restaurado com sucesso!');
+    }
+
+    function renderCatalogo() {
+        const termo = document.getElementById('buscaServico').value.toLowerCase();
+        const filtroStatus = document.getElementById('filtroStatusCatalogo').value;
+        const ul = document.getElementById('listaCatalogo'); ul.innerHTML = '';
+
+        const filtrados = db.catalogo.filter(s => {
+            const matchCat = categoriaSelecionadaFiltro === "TODOS" || s.categoria === categoriaSelecionadaFiltro;
+            const matchTexto = s.nome.toLowerCase().includes(termo) || (s.desc && s.desc.toLowerCase().includes(termo));
+            const matchStatus = filtroStatus === "TODOS" || (filtroStatus === "ATIVOS" && s.ativo !== false) || (filtroStatus === "INATIVOS" && s.ativo === false);
+            return matchCat && matchTexto && matchStatus;
+        });
+
+        document.getElementById('contadorCatalogo').textContent = filtrados.length;
+        if (filtrados.length === 0) { ul.innerHTML = '<li>Nenhum serviço encontrado.</li>'; return; }
+
+        filtrados.forEach(s => {
+            const li = document.createElement('li');
+            if (s.ativo === false) li.className = 'item-inactive';
+            li.innerHTML = `
+                <div style="flex:1;">
+                    <span class="badge badge-pink">${s.categoria}</span>
+                    <div style="margin-top:4px;"><strong>${s.nome}</strong> — <strong style="color:var(--primary-dark);">R$ ${s.preco.toFixed(2).replace('.', ',')}</strong></div>
+                    ${s.desc ? `<div style="font-size:12px; color:#555;">${s.desc}</div>` : ''}
+                </div>
+                <div class="btn-row" style="justify-content:flex-end;">
+                    <button class="btn btn-blue btn-small" onclick="editarServicoCatalogo(${s.id})">Editar</button>
+                    <button class="btn btn-orange btn-small" onclick="alternarAtivoServico(${s.id})">${s.ativo !== false ? 'Desativar' : 'Ativar'}</button>
+                    <button class="btn btn-red btn-small" onclick="excluirServicoCatalogo(${s.id})">X</button>
+                </div>`;
+            ul.appendChild(li);
+        });
+    }
+
+    function aplicarServicoNoOrcamento() {
+        const id = document.getElementById('orcSelectCatalogo').value;
+        const s = db.catalogo.find(x => x.id == id);
+        if (s) {
+            document.getElementById('orcDesc').value = s.nome;
+            document.getElementById('orcValor').value = s.preco.toFixed(2);
+        }
+    }
+
+    // FINANCEIRO
+    function lancarDespesa() {
+        const desc = document.getElementById('despDesc').value.trim(), cat = document.getElementById('despCat').value, valor = parseFloat(document.getElementById('despValor').value), forma = document.getElementById('despForma').value;
+        if(!desc || isNaN(valor)) return alert('Preencha os campos.');
+        db.financeiro.unshift({ id: Date.now(), tipo: 'SAIDA', desc: `[${cat}] ${desc}`, valor, forma, data: new Date().toLocaleDateString('pt-BR') });
+        salvarDb(); document.getElementById('despDesc').value = ''; document.getElementById('despValor').value = ''; renderFinanceiro();
+    }
+    function excluirFinanceiro(id) { if(confirm('Excluir?')) { db.financeiro = db.financeiro.filter(f => f.id != id); salvarDb(); renderFinanceiro(); } }
+    function renderFinanceiro() {
+        let ent = 0, desp = 0; const ul = document.getElementById('listaFinanceiro'); ul.innerHTML = '';
+        db.financeiro.forEach(f => {
+            if(f.tipo === 'ENTRADA') ent += f.valor; else desp += f.valor;
+            ul.innerHTML += `<li><div><strong style="color:${f.tipo === 'ENTRADA' ? 'var(--green)' : 'var(--red)'};">${f.tipo === 'ENTRADA' ? '+' : '-'} R$ ${f.valor.toFixed(2).replace('.', ',')}</strong> - ${f.desc}</div><button class="btn btn-red btn-small" onclick="excluirFinanceiro(${f.id})">X</button></li>`;
+        });
+        document.getElementById('finSaldoCaixa').textContent = `R$ ${(ent - desp).toFixed(2).replace('.', ',')}`;
+        document.getElementById('finTotalDespesas').textContent = `R$ ${desp.toFixed(2).replace('.', ',')}`;
+    }
+
+    // RELATÓRIOS
+    function gerarRelatorioHtml() {
+        let ent = 0, desp = 0; db.financeiro.forEach(f => { if(f.tipo === 'ENTRADA') ent += f.valor; else desp += f.valor; });
+        document.getElementById('conteudoRelatorio').innerHTML = `<h3>RELATÓRIO - ${db.config.nome}</h3><p>Entradas: R$ ${ent.toFixed(2).replace('.', ',')} | Despesas: R$ ${desp.toFixed(2).replace('.', ',')} | Saldo: R$ ${(ent-desp).toFixed(2).replace('.', ',')}</p>`;
+        document.getElementById('cardRelatorioExportado').style.display = 'block';
+    }
+
+    // IMPRESSÃO
+    function atualizarSelectImpressao() {
+        const sel = document.getElementById('selectOsImpressao'); sel.innerHTML = '<option value="">-- Escolha --</option>';
+        db.os.forEach(o => sel.innerHTML += `<option value="${o.id}">${o.cliente} - R$ ${o.valor.toFixed(2).replace('.', ',')}</option>`);
+    }
+    function preencherReciboOs() {
+        const idOs = document.getElementById('selectOsImpressao').value;
+        const o = db.os.find(x => x.id == idOs);
+        if(o) {
+            const dataEnt = o.entrega ? o.entrega.split('-').reverse().join('/') : 'A combinar';
+            const textoNota = 
+`================================
+      ${db.config.nome.toUpperCase()}
+Tel/WhatsApp: ${db.config.tel}
+================================
+NOTA DE ORDEM DE SERVIÇO (OS)
+--------------------------------
+OS ID: #${String(o.id).slice(-4)}
+Data de Emissão: ${o.data}
+--------------------------------
+CLIENTE: ${o.cliente}
+--------------------------------
+PEÇAS E SERVIÇOS LANÇADOS:
+${o.desc}
+--------------------------------
+VALOR TOTAL: R$ ${o.valor.toFixed(2).replace('.', ',')}
+ENTREGA PREVISTA: ${dataEnt}
+STATUS: ${o.status.toUpperCase()}
+--------------------------------
+* Condições: Peças deixadas por mais
+de 90 dias estarão sujeitas a taxa
+de guarda. Verifique na retirada.
+--------------------------------
+     Obrigada pela preferência!     
+================================`;
+            document.getElementById('textoRecibo').value = textoNota;
+        }
+    }
+    function enviarReciboWhatsApp() {
+        const textoRecibo = document.getElementById('textoRecibo').value;
+        if (!textoRecibo.trim()) {
+            return alert('Selecione uma OS primeiro para gerar o recibo.');
+        }
+
+        const idOs = document.getElementById('selectOsImpressao').value;
+        const o = db.os.find(x => x.id == idOs);
+        let telefoneUrl = '';
+
+        if (o) {
+            const cli = db.clientes.find(c => c.nome.toLowerCase() === o.cliente.toLowerCase());
+            if (cli && cli.tel) {
+                const apenasNumeros = cli.tel.replace(/\D/g, '');
+                if (apenasNumeros.length >= 10) {
+                    const numeroComDdi = apenasNumeros.startsWith('55') ? apenasNumeros : '55' + apenasNumeros;
+                    telefoneUrl = `phone=${numeroComDdi}&`;
+                }
+            }
+        }
+
+        const textoCodificado = encodeURIComponent(textoRecibo);
+        window.open(`https://api.whatsapp.com/send?${telefoneUrl}text=${textoCodificado}`, '_blank');
+    }
+
+    async function conectarImprimirBluetooth() {
+        if(!navigator.bluetooth) return alert('Web Bluetooth não suportado.');
+        try {
+            const dev = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
+            const srv = await dev.gatt.connect(), svc = await srv.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb'), chr = await svc.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+            const data = new TextEncoder().encode(document.getElementById('textoRecibo').value + '\n\n\n');
+            for(let i=0; i<data.length; i+=20) await chr.writeValue(data.slice(i, i+20));
+            alert('Impresso!');
+        } catch(e) { alert('Erro: ' + e.message); }
+    }
+
+    // CONFIGURAÇÕES
+    function salvarConfig() {
+        db.config.nome = document.getElementById('confNome').value; db.config.tel = document.getElementById('confTel').value; db.config.pin = document.getElementById('confPin').value;
+        salvarDb(); document.getElementById('headerTitulo').textContent = db.config.nome; alert('Salvo!');
+    }
+    function exportarBackup() {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], {type:'application/json'})); a.download = 'backup_cantinho.json'; a.click();
+    }
+    function importarBackup(e) {
+        const r = new FileReader(); r.onload = ev => { db = JSON.parse(ev.target.result); salvarDb(); init(); alert('Restaurado!'); }; r.readAsText(e.target.files[0]);
+    }
+
+    init();
+</script>
+</body>
+</html>
