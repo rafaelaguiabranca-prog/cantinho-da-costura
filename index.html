@@ -482,6 +482,7 @@
             <h2>Configurações</h2>
             <div class="form-group"><label>Nome do Ateliê</label><input type="text" id="confNome"></div>
             <div class="form-group"><label>Telefone</label><input type="text" id="confTel"></div>
+            <div class="form-group"><label>Chave PIX (CPF, Celular, E-mail ou Aleatória)</label><input type="text" id="confPix" placeholder="Ex: 73999999999 ou pix@atelie.com"></div>
             <div class="form-group"><label>PIN (4 dígitos)</label><input type="password" id="confPin" maxlength="4"></div>
             <button class="btn" onclick="salvarConfig()">Salvar</button>
         </div>
@@ -532,7 +533,7 @@
     let itensCarrinhoOs = [];
 
     let db = JSON.parse(localStorage.getItem('cantinho_db_v2')) || {
-        config: { nome: "Cantinho da Costura", tel: "(73) 99999-9999", pin: "1234" },
+        config: { nome: "Cantinho da Costura", tel: "(73) 99999-9999", pix: "", pin: "1234" },
         clientes: [], os: [], orcamentos: [], financeiro: [],
         catalogo: JSON.parse(JSON.stringify(CATALOGO_PADRAO_55))
     };
@@ -575,6 +576,8 @@
         document.getElementById('headerTitulo').textContent = db.config.nome;
         document.getElementById('confNome').value = db.config.nome;
         document.getElementById('confTel').value = db.config.tel;
+        if (!db.config.pix) db.config.pix = '';
+        document.getElementById('confPix').value = db.config.pix;
         document.getElementById('confPin').value = db.config.pin;
         renderClientes();
         renderOs();
@@ -1169,14 +1172,37 @@ de 90 dias estarão sujeitas a taxa
 de guarda. Verifique na retirada.
 --------------------------------
      Obrigada pela preferência!     
-================================`;
+================================${db.config.pix ? `\nCHAVE PIX PARA PAGAMENTO:\n${db.config.pix}\n================================` : ''}`;
             document.getElementById('textoRecibo').value = textoNota;
         }
     }
+    function copiarChavePixDireto() {
+        const chave = (db.config && db.config.pix) ? db.config.pix.trim() : '';
+        if (!chave) {
+            alert('Nenhuma chave PIX cadastrada em Configurações.');
+            return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(chave).then(() => {
+                alert('Chave PIX copiada: ' + chave);
+            }).catch(() => {
+                prompt('Copie a chave PIX abaixo:', chave);
+            });
+        } else {
+            prompt('Copie a chave PIX abaixo:', chave);
+        }
+    }
+
     function enviarReciboWhatsApp() {
-        const textoRecibo = document.getElementById('textoRecibo').value;
+        let textoRecibo = document.getElementById('textoRecibo').value;
         if (!textoRecibo.trim()) {
             return alert('Selecione uma OS primeiro para gerar o recibo.');
+        }
+
+        const chavePix = (db.config && db.config.pix) ? db.config.pix.trim() : '';
+        if (chavePix && !textoRecibo.includes(chavePix)) {
+            textoRecibo += `\n--------------------------------\nCHAVE PIX (COPIA E COLA / CHAVE):\n${chavePix}`;
+            document.getElementById('textoRecibo').value = textoRecibo;
         }
 
         const idOs = document.getElementById('selectOsImpressao').value;
@@ -1196,6 +1222,12 @@ de guarda. Verifique na retirada.
 
         const textoCodificado = encodeURIComponent(textoRecibo);
         window.open(`https://api.whatsapp.com/send?${telefoneUrl}text=${textoCodificado}`, '_blank');
+
+        if (chavePix) {
+            if (confirm('Recibo enviado para o WhatsApp! Deseja copiar a chave PIX (' + chavePix + ') agora para colar na conversa?')) {
+                copiarChavePixDireto();
+            }
+        }
     }
 
     async function conectarImprimirBluetooth() {
@@ -1211,8 +1243,13 @@ de guarda. Verifique na retirada.
 
     // CONFIGURAÇÕES
     function salvarConfig() {
-        db.config.nome = document.getElementById('confNome').value; db.config.tel = document.getElementById('confTel').value; db.config.pin = document.getElementById('confPin').value;
-        salvarDb(); document.getElementById('headerTitulo').textContent = db.config.nome; alert('Salvo!');
+        db.config.nome = document.getElementById('confNome').value;
+        db.config.tel = document.getElementById('confTel').value;
+        db.config.pix = document.getElementById('confPix').value.trim();
+        db.config.pin = document.getElementById('confPin').value;
+        salvarDb();
+        document.getElementById('headerTitulo').textContent = db.config.nome;
+        alert('Salvo!');
     }
     function exportarBackup() {
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], {type:'application/json'})); a.download = 'backup_cantinho.json'; a.click();
