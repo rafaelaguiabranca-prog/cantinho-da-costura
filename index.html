@@ -346,172 +346,6 @@
                 <div class="form-group"><label>Valor Estimado (R$) *</label><input type="number" step="0.01" id="orcValor"></div>
             </div>
             <div class="form-group"><label>Descrição *</label><textarea id="orcDesc" rows="2"></textarea></div>
-rdCliente">Novo Cadastro de Cliente</h2>
-            <input type="hidden" id="cliEditId">
-            <div class="grid-2">
-                <div class="form-group"><label>Nome Completo *</label><input type="text" id="cliNome"></div>
-                <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="cliTel"></div>
-            </div>
-            <div class="form-group">
-                <label>Ficha de Medidas</label>
-                <textarea id="cliMedidas" rows="3" placeholder="Busto, Cintura, Quadril, Comprimento..."></textarea>
-            </div>
-            <div class="btn-row">
-                <button class="btn" id="btnSalvarCliente" onclick="salvarCliente()">Salvar Cliente</button>
-                <button class="btn btn-red btn-small" id="btnCancelarCliente" style="display:none;" onclick="limparCliente()">Cancelar</button>
-            </div>
-        </div>
-        <div class="card">
-            <h2>Lista de Clientes</h2>
-            <input type="text" id="buscaCliente" placeholder="Pesquisar cliente..." onkeyup="renderClientes()" style="margin-bottom:10px;">
-            <ul id="listaClientes" class="item-list"></ul>
-        </div>
-    </div>
-
-    <!-- PDV / CAIXA RÁPIDO -->
-    <div id="pdv" class="tab-content">
-        <div class="card">
-            <h2>PDV - Caixa Rápido do Ateliê</h2>
-            <div class="grid-3">
-                <div class="form-group">
-                    <label>Cliente (Opcional)</label>
-                    <input type="text" id="pdvCliente" list="listaClientesPdv" placeholder="Ex: Cliente Balcão ou Nome">
-                    <datalist id="listaClientesPdv"></datalist>
-                </div>
-                <div class="form-group">
-                    <label>Forma de Pagamento</label>
-                    <select id="pdvPagamento">
-                        <option value="PIX">PIX</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                        <option value="Cartão">Cartão</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Status do Atendimento</label>
-                    <select id="pdvStatus">
-                        <option value="Entregue" selected>Entregue (Venda/Serviço Direto)</option>
-                        <option value="Em Andamento">Em Andamento (Deixou Peça)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="background: var(--bg); border: 1px dashed var(--primary); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <label style="color: var(--primary-dark); font-weight: bold; margin-bottom: 6px;">Adicionar Serviço / Item ao Caixa</label>
-                <div class="grid-3" style="gap:8px; margin-bottom:8px;">
-                    <div style="grid-column: span 2;">
-                        <select id="pdvSelectCatalogo">
-                            <option value="">-- Selecione um serviço do catálogo --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <input type="number" id="pdvQtd" value="1" min="1" placeholder="Qtd">
-                    </div>
-                </div>
-                <button class="btn btn-outline btn-small" onclick="adicionarItemPdv()">+ Adicionar ao PDV</button>
-            </div>
-
-            <div class="form-group">
-                <label>Itens no Caixa (Quantidade e Valor Unitário Editáveis):</label>
-                <div id="listaItensPdv" style="background:#fff; border:1px solid var(--border); border-radius:6px; padding:10px; max-height:220px; overflow-y:auto;">
-                    <p style="color:#777; font-size:13px; margin:0;">Nenhum item no caixa ainda.</p>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Desconto (R$)</label>
-                    <input type="number" step="0.01" id="pdvDesconto" value="0.00" onchange="renderPdv()">
-                </div>
-                <div class="form-group">
-                    <label>Valor Recebido (R$) - Para Troco</label>
-                    <input type="number" step="0.01" id="pdvRecebido" placeholder="0.00" oninput="calcularTrocoPdv()">
-                </div>
-            </div>
-
-            <div style="background: var(--primary-light); padding: 12px; border-radius: 8px; margin-bottom: 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <div>
-                    <strong style="font-size:16px; color:var(--primary-dark);">TOTAL A PAGAR: <span id="pdvTotalDisplay">R$ 0,00</span></strong>
-                </div>
-                <div>
-                    <strong style="font-size:15px; color:var(--green);">TROCO: <span id="pdvTrocoDisplay">R$ 0,00</span></strong>
-                </div>
-            </div>
-
-            <button class="btn btn-green" onclick="finalizarVendaPdv()">✅ Finalizar Venda / Gerar OS e Enviar WhatsApp</button>
-        </div>
-    </div>
-
-    <!-- ORDENS DE SERVIÇO -->
-    <div id="os" class="tab-content">
-        <div class="card">
-            <h2>Nova Ordem de Serviço (OS) com Múltiplas Peças</h2>
-            <div class="grid-2">
-                <div class="form-group"><label>Cliente *</label><select id="osCliente"></select></div>
-                <div class="form-group">
-                    <label>Status da OS</label>
-                    <select id="osStatus">
-                        <option value="Aguardando Tecido/Aviamento">1. Aguardando Tecido/Aviamento</option>
-                        <option value="Orçamento">2. Orçamento</option>
-                        <option value="Orçamento Aprovado">3. Orçamento Aprovado</option>
-                        <option value="Em Andamento" selected>4. Em Andamento</option>
-                        <option value="Aguardando Prova">5. Aguardando Prova</option>
-                        <option value="Pronto">6. Pronto</option>
-                        <option value="Entregue">7. Entregue</option>
-                        <option value="Cancelado">8. Cancelado</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="background: var(--bg); border: 1px dashed var(--primary); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <label style="color: var(--primary-dark); font-weight: bold; margin-bottom: 6px;">Adicionar Peças / Serviços do Catálogo à OS</label>
-                <div class="grid-3" style="gap:8px; margin-bottom:8px;">
-                    <div style="grid-column: span 2;">
-                        <select id="osSelectCatalogo">
-                            <option value="">-- Selecione um serviço --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <input type="number" id="osQtdItem" value="1" min="1" placeholder="Qtd">
-                    </div>
-                </div>
-                <button class="btn btn-outline btn-small" onclick="adicionarItemOsCarrinho()">+ Adicionar Peça/Serviço à Lista</button>
-            </div>
-
-            <div class="form-group">
-                <label>Itens Adicionados na OS (Você pode editar diretamente o valor unitário de cada item abaixo):</label>
-                <div id="listaItensCarrinhoOs" style="background:#fff; border:1px solid var(--border); border-radius:6px; padding:10px; max-height:220px; overflow-y:auto;">
-                    <p style="color:#777; font-size:13px; margin:0;">Nenhum item adicionado ainda.</p>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group"><label>Valor Total calculado (R$) * (Editável se preferir)</label><input type="number" step="0.01" id="osValor"></div>
-                <div class="form-group"><label>Data de Entrega</label><input type="date" id="osEntrega"></div>
-            </div>
-            <div class="form-group"><label>Observações / Descrição Geral</label><textarea id="osDesc" rows="2" placeholder="Ex: Sacola com 10 peças variadas..."></textarea></div>
-            <button class="btn" onclick="salvarOs()">Criar Ordem de Serviço</button>
-        </div>
-        <div class="card">
-            <h2>Ordens de Serviço Cadastradas</h2>
-            <ul id="listaOs" class="item-list"></ul>
-        </div>
-    </div>
-
-    <!-- ORÇAMENTOS -->
-    <div id="orcamentos" class="tab-content">
-        <div class="card">
-            <h2>Novo Orçamento</h2>
-            <div class="form-group">
-                <label>Preencher Rápido do Catálogo (Opcional)</label>
-                <select id="orcSelectCatalogo" onchange="aplicarServicoNoOrcamento()">
-                    <option value="">-- Selecione um serviço do catálogo --</option>
-                </select>
-            </div>
-            <div class="grid-2">
-                <div class="form-group"><label>Cliente *</label><input type="text" id="orcCliente"></div>
-                <div class="form-group"><label>Valor Estimado (R$) *</label><input type="number" step="0.01" id="orcValor"></div>
-            </div>
-            <div class="form-group"><label>Descrição *</label><textarea id="orcDesc" rows="2"></textarea></div>
             <button class="btn" onclick="salvarOrcamento()">Gerar Orçamento</button>
         </div>
         <div class="card">
@@ -654,6 +488,11 @@ rdCliente">Novo Cadastro de Cliente</h2>
             <div class="form-group"><label>Nome do Ateliê</label><input type="text" id="confNome"></div>
             <div class="form-group"><label>Telefone</label><input type="text" id="confTel"></div>
             <div class="form-group"><label>Chave PIX (CPF, Celular, E-mail ou Aleatória)</label><input type="text" id="confPix" placeholder="Ex: 73999999999 ou pix@atelie.com"></div>
+            <div class="form-group">
+                <label>Logo do Ateliê (Escolher imagem do aparelho OU colar/digitar link da imagem)</label>
+                <input type="file" id="confLogoFile" accept="image/*" onchange="atualizarLogoConfig(event)" style="margin-bottom:8px;">
+                <input type="text" id="confLogoUrl" placeholder="Ou cole aqui o link (URL) da imagem da logo e clique em Salvar" oninput="aplicarLogoUrl(this.value)">
+            </div>
             <div class="form-group"><label>PIN (4 dígitos)</label><input type="password" id="confPin" maxlength="4"></div>
             <button class="btn" onclick="salvarConfig()">Salvar</button>
         </div>
@@ -704,7 +543,7 @@ rdCliente">Novo Cadastro de Cliente</h2>
     let itensCarrinhoOs = [];
 
     let db = JSON.parse(localStorage.getItem('cantinho_db_v2')) || {
-        config: { nome: "Cantinho da Costura", tel: "(73) 99999-9999", pix: "", pin: "1234" },
+        config: { nome: "Cantinho da Costura", tel: "(73) 99999-9999", pix: "", logo: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23FCE8F0'/><path d='M16 44c6-12 18-24 32-28-4 14-16 26-28 32l-6 2 2-6z' fill='%23AD416F'/><circle cx='44' cy='20' r='5' fill='%23D96B9A'/><path d='M14 50h36' stroke='%23AD416F' stroke-width='3' stroke-linecap='round'/></svg>", pin: "1234" },
         clientes: [], os: [], orcamentos: [], financeiro: [],
         catalogo: JSON.parse(JSON.stringify(CATALOGO_PADRAO_55))
     };
@@ -745,6 +584,13 @@ rdCliente">Novo Cadastro de Cliente</h2>
 
     function init() {
         document.getElementById('headerTitulo').textContent = db.config.nome;
+        if (!db.config.logo) db.config.logo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23FCE8F0'/><path d='M16 44c6-12 18-24 32-28-4 14-16 26-28 32l-6 2 2-6z' fill='%23AD416F'/><circle cx='44' cy='20' r='5' fill='%23D96B9A'/><path d='M14 50h36' stroke='%23AD416F' stroke-width='3' stroke-linecap='round'/></svg>";
+        const logoEl = document.getElementById('headerLogo');
+        if (logoEl && db.config.logo) logoEl.src = db.config.logo;
+        const logoUrlInput = document.getElementById('confLogoUrl');
+        if (logoUrlInput) {
+            logoUrlInput.value = (db.config.logo && db.config.logo.startsWith('http')) ? db.config.logo : '';
+        }
         document.getElementById('confNome').value = db.config.nome;
         document.getElementById('confTel').value = db.config.tel;
         if (!db.config.pix) db.config.pix = '';
@@ -1343,7 +1189,10 @@ de 90 dias estarão sujeitas a taxa
 de guarda. Verifique na retirada.
 --------------------------------
      Obrigada pela preferência!     
-================================${db.config.pix ? `\nCHAVE PIX PARA PAGAMENTO:\n${db.config.pix}\n================================` : ''}`;
+================================${db.config.pix ? `
+CHAVE PIX PARA PAGAMENTO:
+${db.config.pix}
+================================` : ''}`;
             document.getElementById('textoRecibo').value = textoNota;
         }
     }
@@ -1413,13 +1262,51 @@ de guarda. Verifique na retirada.
     }
 
     // CONFIGURAÇÕES
+    function atualizarLogoConfig(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const imgTmp = new Image();
+            imgTmp.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxW = 180;
+                const scale = Math.min(1, maxW / imgTmp.width);
+                canvas.width = Math.max(1, Math.round(imgTmp.width * scale));
+                canvas.height = Math.max(1, Math.round(imgTmp.height * scale));
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(imgTmp, 0, 0, canvas.width, canvas.height);
+                db.config.logo = canvas.toDataURL('image/jpeg', 0.8);
+                const logoEl = document.getElementById('headerLogo');
+                if (logoEl) logoEl.src = db.config.logo;
+                salvarDb();
+            };
+            imgTmp.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function aplicarLogoUrl(url) {
+        const limpo = (url || '').trim();
+        if (!limpo) return;
+        db.config.logo = limpo;
+        const logoEl = document.getElementById('headerLogo');
+        if (logoEl) logoEl.src = limpo;
+    }
+
     function salvarConfig() {
         db.config.nome = document.getElementById('confNome').value;
         db.config.tel = document.getElementById('confTel').value;
         db.config.pix = document.getElementById('confPix').value.trim();
+        const urlInput = document.getElementById('confLogoUrl');
+        if (urlInput && urlInput.value.trim()) {
+            db.config.logo = urlInput.value.trim();
+        }
         db.config.pin = document.getElementById('confPin').value;
         salvarDb();
         document.getElementById('headerTitulo').textContent = db.config.nome;
+        const logoEl = document.getElementById('headerLogo');
+        if (logoEl && db.config.logo) logoEl.src = db.config.logo;
         alert('Salvo!');
     }
     function exportarBackup() {
