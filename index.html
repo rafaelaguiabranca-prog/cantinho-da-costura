@@ -473,10 +473,18 @@
             <h2>Impressão Térmica ESC/POS</h2>
             <div class="form-group"><label>Selecionar OS:</label><select id="selectOsImpressao" onchange="preencherReciboOs()"></select></div>
             <div class="form-group"><label>Recibo:</label><textarea id="textoRecibo" rows="14" style="font-family:monospace;"></textarea></div>
+            <div id="boxPixRecibo" style="display:none; background: var(--primary-light); border: 1px solid var(--primary); border-radius: 8px; padding: 12px; margin-bottom: 12px; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <strong style="font-size: 12px; color: var(--primary-dark);">CHAVE PIX CADASTRADA:</strong>
+                    <div id="textoChavePixRecibo" style="font-size: 15px; font-weight: bold; color: var(--text); margin-top: 2px;"></div>
+                </div>
+                <button type="button" class="btn btn-outline btn-small" onclick="copiarChavePixDireto()">📋 Copiar chave PIX</button>
+            </div>
             <div class="btn-row">
                 <button class="btn" onclick="conectarImprimirBluetooth()">Imprimir via Bluetooth</button>
                 <button class="btn btn-green" onclick="window.print()">Imprimir no Navegador</button>
                 <button class="btn" style="background-color: #25D366;" onclick="enviarReciboWhatsApp()">📲 Compartilhar via WhatsApp</button>
+                <button type="button" class="btn btn-outline" onclick="copiarChavePixDireto()">📋 Copiar chave PIX</button>
             </div>
         </div>
     </div>
@@ -578,7 +586,7 @@
         if(id === 'pdv') { atualizarPdvSelects(); renderPdv(); }
         if(id === 'os') { atualizarSelectClientesOs(); atualizarSelectsCatalogoIntegracao(); }
         if(id === 'orcamentos') { atualizarSelectsCatalogoIntegracao(); }
-        if(id === 'impressao') atualizarSelectImpressao();
+        if(id === 'impressao') { atualizarSelectImpressao(); atualizarBlocoPixRecibo(); }
         if(id === 'catalogo') { renderFiltroCategorias(); renderCatalogo(); }
     }
 
@@ -606,6 +614,7 @@
         atualizarPdvSelects();
         renderPdv();
         atualizarDashboard();
+        atualizarBlocoPixRecibo();
     }
 
     // DASHBOARD
@@ -1160,7 +1169,20 @@
         const sel = document.getElementById('selectOsImpressao'); sel.innerHTML = '<option value="">-- Escolha --</option>';
         db.os.forEach(o => sel.innerHTML += `<option value="${o.id}">${o.cliente} - R$ ${o.valor.toFixed(2).replace('.', ',')}</option>`);
     }
+    function atualizarBlocoPixRecibo() {
+        const box = document.getElementById('boxPixRecibo');
+        const txt = document.getElementById('textoChavePixRecibo');
+        const chave = (db.config && db.config.pix) ? db.config.pix.trim() : '';
+        if (!box || !txt) return;
+        if (chave) {
+            txt.textContent = chave;
+            box.style.display = 'flex';
+        } else {
+            box.style.display = 'none';
+        }
+    }
     function preencherReciboOs() {
+        atualizarBlocoPixRecibo();
         const idOs = document.getElementById('selectOsImpressao').value;
         const o = db.os.find(x => x.id == idOs);
         if(o) {
@@ -1304,6 +1326,7 @@ ${db.config.pix}
         }
         db.config.pin = document.getElementById('confPin').value;
         salvarDb();
+        atualizarBlocoPixRecibo();
         document.getElementById('headerTitulo').textContent = db.config.nome;
         const logoEl = document.getElementById('headerLogo');
         if (logoEl && db.config.logo) logoEl.src = db.config.logo;
